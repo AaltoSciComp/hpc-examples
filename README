@@ -1,0 +1,3 @@
+This repository contains examples of triton usage.
+
+* `slurm/`: Basic submit scripts and programs
