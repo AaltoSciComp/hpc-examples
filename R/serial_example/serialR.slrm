@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH -p short
+#SBATCH -t 00:20:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=8G
+#SBATCH -o parallelR.out
+module load R
+
+echo 'Running explicitly parallel example:'
+
+srun Rscript ExplicitParallel.R
