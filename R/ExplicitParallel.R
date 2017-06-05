@@ -8,10 +8,23 @@
 # Examples for the R and Parallel Computing blog in COS website （cos.name)
 # Author: Peng Zhao, 8/30/2016
 
-# Get the number of cores to use
-cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK"))
-if (cores == 0) {
+# Get the number of cores to use from command line or from SLURM_CPUS_PER_TASK
+library("optparse")
+
+option_list = list(
+  make_option(c("-c", "--cores"), type="integer", default=NULL, 
+                help="Number of cpus to use", metavar="integer")); 
+
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+if (is.null(opt$cores)) {
+  cores <- as.integer(Sys.getenv("SLURM_CPUS_PER_TASK"))
+  if (is.na(cores)) {
     cores <- 1
+  }
+} else {
+    cores <- opt$cores
 }
 message("Number of cores used: ",cores)
 

@@ -7,4 +7,4 @@
 #SBATCH --mem=8G
 #SBATCH -o parallelR.out
 module load R
-srun Rscript parallelR.R
+srun Rscript ExplicitParallel.R
