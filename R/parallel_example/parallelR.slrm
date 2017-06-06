@@ -4,11 +4,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=8G
+#SBATCH --mem=3G
 #SBATCH -o parallelR.out
 module load R
 
-echo 'Running parallel loops with varying CPU numbers:'
-for i in $(seq 1 $SLURM_CPUS_PER_TASK); do
-    srun Rscript parallelR.R -c $i
-done
+echo 'Running parallel R example:'
+
+srun Rscript parallelR.R
