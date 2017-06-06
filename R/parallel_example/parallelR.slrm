@@ -6,6 +6,7 @@
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=3G
 #SBATCH -o parallelR.out
+
 module load R
 
 echo 'Running parallel R example:'

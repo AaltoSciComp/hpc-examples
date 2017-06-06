@@ -5,6 +5,7 @@
 #SBATCH --mem=3G
 #SBATCH -o serialR.out
 
+
 module load R
 
 echo 'Running a simple serial R example:'
