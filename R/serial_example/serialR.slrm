@@ -1,13 +1,12 @@
 #!/bin/bash
 #SBATCH -p short
 #SBATCH -t 00:20:00
-#SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=8G
-#SBATCH -o parallelR.out
+#SBATCH --mem=3G
+#SBATCH -o serialR.out
+
 module load R
 
-echo 'Running explicitly parallel example:'
+echo 'Running a simple serial R example:'
 
-srun Rscript ExplicitParallel.R
+srun Rscript serialR.R
