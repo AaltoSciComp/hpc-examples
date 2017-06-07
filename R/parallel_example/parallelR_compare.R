@@ -26,12 +26,11 @@ if (is.null(opt$cores)) {
 } else {
     cores <- opt$cores
 }
-message("Number of cores used: ",cores)
-
+message('Running benchmark with ',cores,' processes')
 
 # Generate data    
 message("Generating data")
-len <- 1e6
+len <- 2e6
 a <- runif(len, -10, 10)
 a[sample(len, 100,replace=TRUE)] <- 0
 
@@ -62,68 +61,51 @@ solve.quad.eq <- function(a, b, c)
 # *apple style
 ##############################################################################################
 # serial code
-message("Running lapply")
-system.time(
-    res1.s <- lapply(1:len, FUN = function(x) { solve.quad.eq(a[x], b[x], c[x])})
-)
 
+library(rbenchmark)
+
+benchmark( 
+    'lapply' = {
+        res1.s <- lapply(1:len, FUN = function(x) { solve.quad.eq(a[x], b[x], c[x])})
+    },
 # parallel
-message("Running mcapply with parallel-package")
-library(parallel)
 # multicores on Linux
-system.time(
-  res1.p <- mclapply(1:len, FUN = function(x) { solve.quad.eq(a[x], b[x], c[x])}, mc.cores = cores)
+    'mcapply' = {
+        library(parallel)
+        res1.p <- mclapply(1:len, FUN = function(x) { solve.quad.eq(a[x], b[x], c[x])}, mc.cores = cores)
+    },
+    'parLapply' = {
+        library(parallel)
+        cl <- makeCluster(cores)
+        clusterExport(cl, c('solve.quad.eq', 'a', 'b', 'c'))
+        res1.p <- parLapply(cl, 1:len, function(x) { solve.quad.eq(a[x], b[x], c[x]) })
+        stopCluster(cl)
+    },
+    'for' = {
+        res2.s <- matrix(0, nrow=len, ncol = 2)
+        for(i in 1:len) {
+            res2.s[i,] <- solve.quad.eq(a[i], b[i], c[i])
+        }
+    },
+    'foreach/dopar' = {
+        library(foreach)
+        library(doParallel)
+        cl <- makeCluster(cores)
+        registerDoParallel(cl, cores=cores)
+        chunk.size <- len/cores
+        res2.p <- foreach(i=1:cores, .combine='rbind') %dopar%
+            { # local data for results
+            res <- matrix(0, nrow=chunk.size, ncol=2)
+            for(x in ((i-1)*chunk.size+1):(i*chunk.size)) {
+                res[x - (i-1)*chunk.size,] <- solve.quad.eq(a[x], b[x], c[x])
+            }
+            # return local results
+            res
+        }
+        stopImplicitCluster()
+        stopCluster(cl)
+    },
+    replications=1,
+    columns = c("test", "elapsed", "relative", "user.self", "sys.self")
 )
 
-
-# cluster
-message("Running Cluster parLapply with parallel-package")
-cl <- makeCluster(cores)
-clusterExport(cl, c('solve.quad.eq', 'a', 'b', 'c'))
-system.time(
-   res1.p <- parLapply(cl, 1:len, function(x) { solve.quad.eq(a[x], b[x], c[x]) })
-)
-stopCluster(cl)
-
-
-##########################################################################################
-# For style
-###########################################################################################
-# serial code
-message("Running serial for-loop")
-res2.s <- matrix(0, nrow=len, ncol = 2)
-system.time(
-    for(i in 1:len) {
-        res2.s[i,] <- solve.quad.eq(a[i], b[i], c[i])
-    }
-)
-
-# foreach
-library(foreach)
-library(doParallel)
-
-# Real physical cores in my computer
-cl <- makeCluster(cores)
-registerDoParallel(cl, cores=cores)
-
-# clusterSplit are very convience to split data but it takes lots of extra memory
-# chunks <- clusterSplit(cl, 1:len)
-
-# split data by ourselves
-chunk.size <- len/cores
-
-message("Running parallel for loop with foreach- and doParallel-packages")
-system.time(
-  res2.p <- foreach(i=1:cores, .combine='rbind') %dopar%
-  {  # local data for results
-     res <- matrix(0, nrow=chunk.size, ncol=2)
-     for(x in ((i-1)*chunk.size+1):(i*chunk.size)) {
-        res[x - (i-1)*chunk.size,] <- solve.quad.eq(a[x], b[x], c[x])
-     }
-     # return local results
-     res
-  }
-)
-
-stopImplicitCluster()
-stopCluster(cl)
