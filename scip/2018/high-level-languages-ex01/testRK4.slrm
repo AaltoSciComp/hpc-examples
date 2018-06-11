@@ -1,0 +1,30 @@
+#!/bin/bash
+
+##
+## Write SBATCH directives here
+##
+
+## Run MATLAB example ##
+
+module purge
+# Load the correct MATLAB-module here
+module list
+
+matlab -nojvm -r 'testRK4(); exit()'
+
+## Run Python example ##
+
+module purge
+# Load the correct Python-module here
+module list
+
+python testRK4.py
+
+## Run R example ## 
+
+module purge
+# Load the correct R-module here
+module list
+
+Rscript --vanilla testRK4.R
+
