@@ -10,7 +10,7 @@ module purge
 # Load the correct MATLAB-module here
 module list
 
-matlab -nojvm -r 'testRK4(); exit()'
+srun matlab -nojvm -r 'testRK4(); exit()'
 
 ## Run Python example ##
 
@@ -18,7 +18,7 @@ module purge
 # Load the correct Python-module here
 module list
 
-python testRK4.py
+srun python testRK4.py
 
 ## Run R example ## 
 
@@ -26,5 +26,4 @@ module purge
 # Load the correct R-module here
 module list
 
-Rscript --vanilla testRK4.R
-
+srun Rscript --vanilla testRK4.R
