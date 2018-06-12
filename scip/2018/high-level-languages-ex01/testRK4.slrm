@@ -26,4 +26,4 @@ module purge
 # Load the correct R-module here
 module list
 
-srun Rscript --vanilla testRK4.R
+srun Rscript testRK4.R
