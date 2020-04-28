@@ -7,11 +7,11 @@ import platform
 import resource
 
 if __name__ == "__main__":
-      
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('mem', metavar="memory", 
+    parser.add_argument('mem', metavar="memory",
             help="Use this much memory")
-    parser.add_argument('--sleep', 
+    parser.add_argument('--sleep',
             help="Sleep this many seconds", type=int)
     args = parser.parse_args()
 
@@ -32,7 +32,7 @@ if __name__ == "__main__":
 
     elif mem.endswith('t'):
         mem = int(mem[:-1])*1000**4
- 
+
     else:
         mem = int(mem)
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
         actual_bytes = resource.getrusage(
                 resource.RUSAGE_SELF).ru_maxrss*(1024 if \
                         platform.system() == 'Linux' else 1)
-        print("Using %d bytes so far (allocated: %s)" 
+        print("Using %d bytes so far (allocated: %s)"
                 %(actual_bytes, allocated))
         if actual_bytes > mem:
             break
