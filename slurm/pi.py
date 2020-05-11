@@ -1,46 +1,53 @@
 #!/usr/bin/env python3
-from __future__ import print_function, division
+from __future__ import division, print_function
+from multiprocessing import Pool
 import argparse
 import random
-from random import uniform
 import sys
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--threads', type=int, help="number of threads, using multiprocessing")
-parser.add_argument('--seed', help="Random seed")
-parser.add_argument('N', type=int, help="number of iterations total")
-args = parser.parse_args()
+def is_in_circle(gen):
+    x = gen.uniform(0, 1)
+    y = gen.uniform(0, 1) 
+    return x**2 + y**2 < 1
 
-N = args.N
-if args.threads:
-    # Ensure N is a multiple of threads
-    N = (N//args.threads)*args.threads
-    print("Using %d threads"%args.threads)
-print("Calculating pi via %d stochastic trials"%N)
-if args.seed:
-    print("Setting random seed to %s"%args.seed)
-    random.seed(args.seed)
+def points_in_circle(iterations, seed):
+    gen = random.Random(seed)
+    return sum(1 for _ in range(iterations) if is_in_circle(gen))
 
-def trial():
-    return uniform(0,1)**2 + uniform(0,1)**2 < 1
+# python2 does not come with Pool.starmap...
+def pic_wrapper(a):
+    return points_in_circle(*a)
 
-def n_trials(n):
-    successes = sum(1 for _ in range(n) if trial())
-    return successes
+def estimate_pi(iterations, seed, threads=1):
+    print("Calculating Pi via %d stochastic trials" % iterations,
+            file=sys.stderr)
 
-if args.threads:
-    from multiprocessing import Pool
-    n = N // args.threads
-    trials = [ n ] * args.threads
-    pool = Pool(processes=args.threads)
-    successes = pool.map(n_trials, trials)
-    #print(successes)
-    pool.close()
-    successes = sum(successes)
-else:
-    successes = sum(1 for _ in range(N) if trial())
+    if threads > 1:
+        iterations_per_worker = iterations//threads
+        print("Using %d threads (%d iterations each)" % \
+                (threads, iterations_per_worker), file=sys.stderr)
 
-# pi/4 = successes/N
-print("%d successes out of %d trials"%(successes, N))
-print()
-print("pi =", successes * 4 / N)
+        # Starts <threads> worker processes
+        pool = Pool(processes=threads)
+
+        gen = random.Random(seed)
+        seeds = [gen.randint(0, 2**32-1) for _ in range(threads)]
+        iters = [iterations_per_worker]*threads
+        in_circle_points = pool.map(pic_wrapper, zip(iters, seeds))
+
+        pool.close()
+
+        # Total number of in-circle points
+        return sum(in_circle_points)*4/sum(iters)
+    else:
+        return points_in_circle(iterations, seed)*4/iterations
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--threads', type=int, help="Number of threads, "
+            "using multiprocessing", default=1)
+    parser.add_argument('--seed', type=int, help="Random seed", default=42)
+    parser.add_argument('iters', type=int, help="Number of iterations")
+    args = parser.parse_args()
+    pi = estimate_pi(args.iters, args.seed, args.threads)
+    print("Pi =", pi)
