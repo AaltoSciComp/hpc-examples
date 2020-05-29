@@ -1,4 +1,21 @@
 #!/usr/bin/env python3
+"""Aggregation script for Pi estimations
+
+This script aggregates the results produced
+by running ``pi.py``. The output is in the same
+format as that of ``pi.py``.
+
+Example:
+    If results of ``pi.py`` are ouput to files ``result1.json``,
+    ``result2.json``, etc. then you can calculate weighted
+    average of the estimates by::
+
+       $ python pi_aggregation.py result1.json result2.json ...
+
+    The result would be a more accurate estimation of Pi.
+
+"""
+
 from __future__ import print_function, division
 import json
 import sys
