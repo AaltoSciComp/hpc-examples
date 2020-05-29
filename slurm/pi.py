@@ -3,7 +3,9 @@ from __future__ import division, print_function
 from multiprocessing import Pool
 import argparse
 import random
+import json
 import sys
+import time
 
 def is_in_circle(gen):
     x = gen.uniform(0, 1)
@@ -31,23 +33,32 @@ def estimate_pi(iterations, seed, threads=1):
         pool = Pool(processes=threads)
 
         gen = random.Random(seed)
-        seeds = [gen.randint(0, 2**32-1) for _ in range(threads)]
+        seeds = [gen.randint(0, 2**32 - 1) for _ in range(threads)]
         iters = [iterations_per_worker]*threads
         in_circle_points = pool.map(pic_wrapper, zip(iters, seeds))
 
         pool.close()
 
-        # Total number of in-circle points
-        return sum(in_circle_points)*4/sum(iters)
+        # Returns Pi and in-circle points (successes)
+        return sum(in_circle_points)*4/sum(iters), sum(in_circle_points)
     else:
-        return points_in_circle(iterations, seed)*4/iterations
+        return points_in_circle(iterations, seed)*4/iterations, \
+                points_in_circle(iterations, seed)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--threads', type=int, help="Number of threads, "
             "using multiprocessing", default=1)
     parser.add_argument('--seed', type=int, help="Random seed", default=42)
+    parser.add_argument('--sleep', type=int, help="Sleep this many seconds")
     parser.add_argument('iters', type=int, help="Number of iterations")
     args = parser.parse_args()
-    pi = estimate_pi(args.iters, args.seed, args.threads)
-    print("Pi =", pi)
+    # Calculate Pi and number of in-circle points (successes)
+    pi, successes = estimate_pi(args.iters, args.seed, args.threads)
+    # Sleep
+    if args.sleep:
+        time.sleep(args.sleep)
+
+    # Write to a JSON file
+    result = {"pi_estimate":pi, "iterations":args.iters, "successes":successes}
+    json.dump(result, sys.stdout)
