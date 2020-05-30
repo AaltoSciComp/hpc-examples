@@ -42,8 +42,8 @@ def estimate_pi(iterations, seed, threads=1):
         # Returns Pi and in-circle points (successes)
         return sum(in_circle_points)*4/sum(iters), sum(in_circle_points)
     else:
-        return points_in_circle(iterations, seed)*4/iterations, \
-                points_in_circle(iterations, seed)
+        in_circle_points = points_in_circle(iterations, seed)
+        return in_circle_points*4/iterations, in_circle_points
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
