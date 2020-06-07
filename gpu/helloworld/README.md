@@ -1,4 +1,4 @@
-# Running example
+# gpu/helloworld
 
 For up to date instructions, see [SciComp GPU page](https://scicomp.aalto.fi/triton/tut/gpu/).
 
