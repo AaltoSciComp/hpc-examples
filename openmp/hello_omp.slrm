@@ -1,5 +1,0 @@
-#!/bin/sh
-#SBATCH --time=4:00:00
-#SBATCH --mem=1G
-
-srun hello_omp

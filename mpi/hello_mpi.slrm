@@ -1,7 +1,0 @@
-#!/bin/sh
-#SBATCH --time=5
-#SBATCH --mem-per-cpu=1G
-#SBATCH --nodes=2
-#SBATCH --ntasks=12
-#module load openmpi/1.8.5-java
-srun --mpi=pmi2 hello_mpi
