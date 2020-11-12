@@ -1,0 +1,7 @@
+#!/bin/bash
+#SBATCH -n 5
+
+module purge
+module load anaconda
+
+mpirun python pi-mpi.py
