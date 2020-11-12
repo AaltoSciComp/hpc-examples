@@ -10,7 +10,8 @@ int main(int argc, char *argv[]) {
 
   unsigned int seed = 5;
 
-  sscanf(argv[1], "%ld", &N);
+  if (argc > 1)
+    sscanf(argv[1], "%ld", &N);
   printf("Calculating pi using %ld stochastic trials\n", N);
 
   // Bug: does not seed per-thread.
