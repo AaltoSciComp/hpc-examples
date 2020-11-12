@@ -62,3 +62,4 @@ if __name__ == "__main__":
     # Write to a JSON file
     result = {"pi_estimate":pi, "iterations":args.iters, "successes":successes}
     json.dump(result, sys.stdout)
+    sys.stdout.write('\n')
