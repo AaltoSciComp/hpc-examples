@@ -1,0 +1,13 @@
+#!/bin/bash -l
+#SBATCH --time=00:05:00
+#SBATCH --mem-per-cpu=500M
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=4
+#SBATCH --output=hello_mpi_fortran.out
+
+module load gcc/9.2.0
+module load openmpi/3.1.4
+
+mpifort hello_mpi_fortran.f90 -o hello_mpi_fortran
+
+srun hello_mpi_fortran
