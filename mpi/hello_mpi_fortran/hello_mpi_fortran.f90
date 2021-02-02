@@ -20,4 +20,4 @@ program hello
    print *, 'Hello world from processor ', rank, ' out of ', &
          world_size , ' processors'
    call MPI_FINALIZE(ierror) ! Finalize the MPI
-   end
+end
