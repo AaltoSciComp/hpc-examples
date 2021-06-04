@@ -4,6 +4,8 @@ from time import time
 import numpy as np
 
 print('Using %d processors' % int(os.getenv('SLURM_CPUS_PER_TASK',1)))
+print('Using %d threads' % int(os.getenv('OMP_NUM_THREADS', 1)))
+print('Using %d tasks' % int(os.getenv('SLURM_NTASKS', 1)))
 
 nrounds = 5
 
