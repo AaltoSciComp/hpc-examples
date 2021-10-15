@@ -11,12 +11,12 @@ University's Triton-cluster, but it will be useful to others as well.
    slurm/index
    python
 
-* `gpu/`: GPU usage, compiling CUDA directly.
-* `openmp/`: compiling and running OpenMP* `python/`: Basic Python scripts
-* `openmpi/`: compiling and running MPI
-* `R/`: Basic R scripts
-* `scip/`: Material related to *Scientific Computing In Practice* lecture series.
-* `slurm/`: Basic submit scripts and programs
+* ``gpu/``: GPU usage, compiling CUDA directly.
+* ``openmp/``: compiling and running OpenMP* ``python/``: Basic Python scripts
+* ``openmpi/``: compiling and running MPI
+* ``R/``: Basic R scripts
+* ``scip/``: Material related to *Scientific Computing In Practice* lecture series.
+* ``slurm/``: Basic submit scripts and programs
 
 
 This repository can be found at
