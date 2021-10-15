@@ -9,7 +9,6 @@ University's Triton-cluster, but it will be useful to others as well.
 .. toctree::
 
    slurm/index
-   python
 
 * ``gpu/``: GPU usage, compiling CUDA directly.
 * ``openmp/``: compiling and running OpenMP* ``python/``: Basic Python scripts
