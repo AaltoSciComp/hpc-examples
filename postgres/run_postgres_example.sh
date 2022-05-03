@@ -13,7 +13,7 @@ mkdir -p var/{lib,run}
 
 # Run postgres in a singularity image, forward output to files, catch PID for process
 
-singularity run --env POSTGRES_PASSWORD=mysecretpassword --env LC_ALL=C -B ${PWD}/var/lib:/var/lib/postgresql -B ${PWD}/var/run:/var/run postgres_latest.sif 2> postgres.err 1> postgres.out &
+singularity run --env POSTGRES_PASSWORD=mysecretpassword --env LC_ALL=C --env PGPORT=5433 -B ${PWD}/var/lib:/var/lib/postgresql -B ${PWD}/var/run:/var/run postgres_latest.sif 2> postgres.err 1> postgres.out &
 POSTGRES_PID=$!
 
 # Give postgres few seconds to initialize
