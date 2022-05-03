@@ -43,7 +43,7 @@ password = 'mysecretpassword'
 
 from sqlalchemy import create_engine
 
-engine = create_engine(f"postgresql://{user}:{password}@localhost/postgres", echo=True, future=True)
+engine = create_engine(f"postgresql://{user}:{password}@localhost:5433/postgres", echo=True, future=True)
 
 # Read test data from database
 
