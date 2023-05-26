@@ -20,17 +20,17 @@ def points_in_circle(iterations, seed):
 def pic_wrapper(a):
     return points_in_circle(*a)
 
-def estimate_pi(iterations, seed, threads=1, serial=0.0):
-    print("Calculating Pi via %d stochastic trials" % iterations,
+def estimate_pi(iterations, seed, nprocs=1, serial=0.0):
+    print("Calculating pi via %d stochastic trials" % iterations,
             file=sys.stderr)
 
-    if threads > 1:
+    if nprocs > 1:
         # Compute how much will be done in each worker.
         iterations_serial = int(serial*iterations)
         iterations_parallel = iterations - iterations_serial
-        iterations_per_worker = iterations_parallel//threads
-        print("Using %d threads (%d iterations each)" % \
-                (threads, iterations_per_worker), file=sys.stderr)
+        iterations_per_worker = iterations_parallel//nprocs
+        print("Using %d processes (%d iterations each)" % \
+                (nprocs, iterations_per_worker), file=sys.stderr)
         if serial > 0:
             print("... and %d iterations in serial"%iterations_serial)
 
@@ -40,12 +40,12 @@ def estimate_pi(iterations, seed, threads=1, serial=0.0):
         random_gen = random.Random(seed)
 
         # Parallel part
-        # Starts <threads> worker processes
+        # Starts <nprocs> worker processes
         if serial > 0:
             print("Beginning parallel part")
-        pool = Pool(processes=threads)
-        seeds = [random_gen.randint(0, 2**32 - 1) for _ in range(threads)]
-        iters_per_worker = [iterations_per_worker]*threads
+        pool = Pool(processes=nprocs)
+        seeds = [random_gen.randint(0, 2**32 - 1) for _ in range(nprocs)]
+        iters_per_worker = [iterations_per_worker]*nprocs
         iters_actual += sum(iters_per_worker)
         # This is the actual calculation:
         in_circle_points =+ sum(pool.map(pic_wrapper, zip(iters_per_worker, seeds)))
@@ -58,7 +58,7 @@ def estimate_pi(iterations, seed, threads=1, serial=0.0):
         # This is the actual calculation:
         in_circle_points += pic_wrapper((iterations_serial, random_gen.randint(0, 2**32 - 1)))
 
-        # Returns Pi and in-circle points (successes)
+        # Returns pi and in-circle points (successes)
         return in_circle_points*4/iters_actual, in_circle_points
     else:
         in_circle_points = points_in_circle(iterations, seed)
@@ -66,7 +66,7 @@ def estimate_pi(iterations, seed, threads=1, serial=0.0):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--threads', type=int, help="Number of threads, "
+    parser.add_argument('--nprocs', type=int, help="Number of nprocs, "
             "using multiprocessing", default=1)
     parser.add_argument('--seed', type=int, help="Random seed", default=42)
     parser.add_argument('--sleep', type=int, help="Sleep this many seconds")
@@ -80,8 +80,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
 
-    # Calculate Pi and number of in-circle points (successes)
-    pi, successes = estimate_pi(args.iters, args.seed, args.threads, serial=args.serial)
+    # Calculate pi and number of in-circle points (successes)
+    pi, successes = estimate_pi(args.iters, args.seed, args.nprocs, serial=args.serial)
     # Sleep
     if args.sleep:
         time.sleep(args.sleep)
