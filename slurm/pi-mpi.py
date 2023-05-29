@@ -26,6 +26,7 @@ def sample(n):
 comm = MPI.COMM_WORLD
 size = comm.Get_size()
 rank = comm.Get_rank()
+hostname = MPI.Get_processor_name()
 
 n = 10 ** 7
 
@@ -38,9 +39,9 @@ t0 = time.perf_counter()
 _, n_inside_circle = sample(n_task)
 t = time.perf_counter() - t0
 
-print(f"before gather: rank {rank}, n_inside_circle: {n_inside_circle}")
+print(f"before gather: rank {rank}, hostname {hostname}, n_inside_circle: {n_inside_circle}")
 n_inside_circle = comm.gather(n_inside_circle, root=0)
-print(f"after gather: rank {rank}, n_inside_circle: {n_inside_circle}")
+print(f"after gather: rank {rank}, hostname {hostname}, n_inside_circle: {n_inside_circle}")
 
 if rank == 0:
     pi_estimate = 4.0 * sum(n_inside_circle) / n
