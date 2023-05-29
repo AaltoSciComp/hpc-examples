@@ -7,6 +7,12 @@ import json
 import sys
 import time
 
+try:
+    import numpy
+    numpy_available = True
+except ImportError:
+    numpy_available = False
+
 def is_in_circle(gen):
     x = gen.uniform(0, 1)
     y = gen.uniform(0, 1)
@@ -64,12 +70,34 @@ def estimate_pi(iterations, seed, nprocs=1, serial=0.0):
         in_circle_points = points_in_circle(iterations, seed)
         return in_circle_points*4/iterations, in_circle_points
 
+
+def estimate_pi_vectorized(iterations, seed):
+    batch_size = int(1e5)
+    print("Calculating pi via %d stochastic trials (vectorized version)" % iterations,
+            file=sys.stderr)
+
+    rng = numpy.random.RandomState(seed)
+
+    iterations_left = iterations
+    in_circle_points = 0
+
+    while iterations_left > 0:
+        if iterations_left < batch_size:
+            batch_size = iterations_left
+        x,y = rng.random_sample(size=(2,batch_size))
+        in_circle_points += numpy.sum(numpy.sqrt(x*x + y*y) < 1.0)
+        iterations_left -= batch_size
+
+    return in_circle_points*4/iterations, in_circle_points
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--nprocs', type=int, help="Number of nprocs, "
             "using multiprocessing", default=1)
     parser.add_argument('--seed', type=int, help="Random seed", default=42)
     parser.add_argument('--sleep', type=int, help="Sleep this many seconds")
+    parser.add_argument('--optimized', action='store_true', help="Run an optimized vectorized version of the code")
     parser.add_argument('--serial', type=float, default=0.0,
                         help="This fraction [0.0--1.0] of iterations to be run serial.")
     parser.add_argument('iters', type=int, help="Number of iterations")
@@ -79,14 +107,24 @@ if __name__ == "__main__":
         print("ERROR: --serial should be a fraction from 0.0 to 1.0 (not percent).  (given: %s)"%args.serial)
         sys.exit(1)
 
+    if args.optimized and args.serial:
+        print("ERROR: --serial cannot be used in conjunction with --optimized")
+        sys.exit(1)
+
+    if args.optimized and not numpy_available:
+        print("ERROR: --optimized can only be used when numpy is available")
+        sys.exit(1)
 
     # Calculate pi and number of in-circle points (successes)
-    pi, successes = estimate_pi(args.iters, args.seed, args.nprocs, serial=args.serial)
+    if args.optimized:
+        pi, successes = estimate_pi_vectorized(args.iters, args.seed)
+    else:
+        pi, successes = estimate_pi(args.iters, args.seed, args.nprocs, serial=args.serial)
     # Sleep
     if args.sleep:
         time.sleep(args.sleep)
 
     # Write to a JSON file
-    result = {"pi_estimate":pi, "iterations":args.iters, "successes":successes}
+    result = {"pi_estimate":pi, "iterations":args.iters, "successes":int(successes)}
     json.dump(result, sys.stdout)
     sys.stdout.write('\n')
