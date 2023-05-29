@@ -1,5 +1,8 @@
 #!/bin/bash
-#SBATCH -n 5
+#SBATCH --time=00:10:00
+#SBATCH --mem=2G
+#SBATCH --output=pi-mpi.out
+#SBATCH --ntasks=4
 
 module purge
 module load anaconda
