@@ -4,10 +4,12 @@
 
 int main(int argc, char **argv) {
   // MPI init
-  int size, rank;
+  int size, rank, hostname_len;
+  char hostname[MPI_MAX_PROCESSOR_NAME];
   MPI_Init(NULL, NULL);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+  MPI_Get_processor_name(hostname, &hostname_len);
   // pi init
   long N=10000000;
   if (argc > 1)
@@ -15,12 +17,13 @@ int main(int argc, char **argv) {
   if (rank == 0)
     printf("Calculating pi using %ld stochastic trials\n", N);
   int N_rank = N / size;
-  printf("This is rank %d doing %ld trials\n", rank, N_rank);
+  printf("%s: This is rank %d doing %ld trials\n", hostname, rank, N_rank);
 
   // Seed
   unsigned int seed = 5;
   seed += rank*5000;
 
+  // Calculate trials
   double x, y;
   long i;
   long rank_count = 0;
@@ -34,12 +37,14 @@ int main(int argc, char **argv) {
 
   double pi;
   long count;
+
+  // Sum all trials
   MPI_Reduce(&rank_count, &count, 1, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
 
   if (rank == 0) {
     // pi/4 = count/N
     pi = (double) count*4/N;
-    printf("%g\n", pi);
+    printf("%.8g\n", pi);
   }
 
   MPI_Finalize();
