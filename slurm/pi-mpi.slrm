@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH --time=00:10:00
+#SBATCH --mem=1G
+#SBATCH --output=pi-mpi.out
+#SBATCH --nodes=1
+#SBATCH --ntasks=2
+
+module load openmpi/4.0.5
+
+mpicc -o pi-mpi pi-mpi.c
+
+srun ./pi-mpi 1000000
