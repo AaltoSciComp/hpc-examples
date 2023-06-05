@@ -36,7 +36,7 @@ if __name__ == "__main__":
     else:
         mem = int(mem)
 
-    print("Trying to hog %d bytes of memeory" %mem)
+    print("Trying to use %d bytes of memeory" %mem)
 
     allocated = 1
     array = [bytearray(1)]
