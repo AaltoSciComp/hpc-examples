@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     sscanf(argv[1], "%ld", &N);
   if (rank == 0)
     printf("Calculating pi using %ld stochastic trials\n", N);
-  int N_rank = N / size;
+  long N_rank = N / size;
   printf("%s: This is rank %d doing %ld trials\n", hostname, rank, N_rank);
 
   // Seed
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   if (rank == 0) {
     // pi/4 = count/N
     pi = (double) count*4/N;
-    printf("%.8g\n", pi);
+    printf("Throws: %ld / %ld Pi: %.8g\n", count, N, pi);
   }
 
   MPI_Finalize();
