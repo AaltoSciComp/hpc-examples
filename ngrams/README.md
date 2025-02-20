@@ -101,4 +101,8 @@ $ python3 ngrams/generate.py 2grams-all.out
 - The reading/writing of the counts files takes a large amount of the
   time and shows the importance of good data formats.
 
+- The MaxRSS indication in the multiprocessing version may be wrong
+  (the syscall for children claims to only return MaxRSS for the child
+  with the most memory usage, and may always be zero).
+
 - (and more)

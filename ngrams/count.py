@@ -65,13 +65,13 @@ def opendir(dir_):
         file_list = [ (name, lambda name=name: io.TextIOWrapper(z.open(name), 'utf8'))
                       for name in z.namelist()
                       if name.endswith('.txt') ]
-        print(f'Loaded {len(file_list)} files from {dir_}', file=sys.stderr)
+        print(f'Found {len(file_list)} files in {dir_}', file=sys.stderr)
     # Directories
     elif os.path.isdir(dir_):
-        file_list = [ (name, lambda name=name: open(name, 'r'))
+        file_list = [ (name, lambda name=name, dir_=dir_: open(os.path.join(dir_, name), 'r'))
                       for name in os.listdir(dir_)
                       if name.endswith('.txt') ]
-        print(f'Loaded {len(file_list)} files from {dir_}', file=sys.stderr)
+        print(f'Found {len(file_list)} files in {dir_}', file=sys.stderr)
     # regular files
     else:
         file_list = [ dir_, lambda name=dir_: open(name, 'r') ]
@@ -148,7 +148,7 @@ def main():
     print(f'Walltime {time.time() - start:.2f} s', file=sys.stderr)
     print(f'User time: {rusage_s.ru_utime + rusage_c.ru_utime:.2f} s ({rusage_s.ru_utime:.2f} + {rusage_c.ru_utime:.2f})', file=sys.stderr)
     print(f'System time: {rusage_s.ru_stime + rusage_c.ru_stime:.2f} s ({rusage_s.ru_stime:.2f} + {rusage_c.ru_stime:.2f})', file=sys.stderr)
-    print(f'MaxRSS: {(rusage_s.ru_maxrss + rusage_c.ru_maxrss)/2**30:.2f} GiB ({rusage_s.ru_maxrss/2**30:.2f} + {rusage_c.ru_maxrss/2**30:.2f})', file=sys.stderr)
+    print(f'MaxRSS: {(rusage_s.ru_maxrss + rusage_c.ru_maxrss)/2**20:.3f} GiB ({rusage_s.ru_maxrss/2**20:.3f} + {rusage_c.ru_maxrss/2**20:.3f})', file=sys.stderr)
 
 if __name__ == '__main__':
     main()
