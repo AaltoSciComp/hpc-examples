@@ -1,6 +1,6 @@
 # ngram calculation HPC sample program
 
-These are data-based example scirpts of a HPC cluster.  They are made
+These are data-based example scripts for a HPC cluster. They are made
 quickly and designed to be easy to understand (though it's not
 intended that people look at the code) and show interesting problems
 you might face when using a cluster.
@@ -14,15 +14,15 @@ https://en.wikipedia.org/wiki/N-gram
 
 ## Data
 
-Any text data will work but this especially uses public-domain sample
+Any text data will work, but this especially uses public-domain sample
 data from Project Gutenberg:
 
-Original: https://zenodo.org/records/5783256
-Reprocessed, first 100 books: https://users.aalto.fi/~darstr1/public/Gutenberg-Fiction-first100.zip
-Reprocessed, first 1000 books: https://users.aalto.fi/~darstr1/public/Gutenberg-Fiction-first1000.zip
+- Original: https://zenodo.org/records/5783256
+- Reprocessed, first 100 books: https://users.aalto.fi/~darstr1/public/Gutenberg-Fiction-first100.zip
+- Reprocessed, first 1000 books: https://users.aalto.fi/~darstr1/public/Gutenberg-Fiction-first1000.zip
 
-(on the Triton cluster, these are available in
-`/scratch/shareddata/teaching/`.)
+On the Triton cluster, these are available in
+`/scratch/shareddata/teaching/`.
 
 A unique feature is that it can read `.txt` files from zipfiles
 without needing to decompress the zipfile.
@@ -31,7 +31,7 @@ without needing to decompress the zipfile.
 
 ## count.py and count-multi.py
 
-Reads in text files and outputs ngrams found within them.  count-multi
+Reads in text files and outputs ngrams found within them. count-multi
 is a version that uses multiprocessing with the --threads option
 (though it's processes, not threads).
 
@@ -58,7 +58,7 @@ Loaded 18738 files from /scratch/shareddata/teaching/Gutenberg-Fiction.zip
 
 ## combine-counts.py
 
-Reads multiple counts files and outputs one counts file combining them.
+Reads multiple count files and outputs one count file combining them.
 
 Example:
 
@@ -67,9 +67,10 @@ $ python3 ngrams/combine-counts.py array-2grams_*.out -o 2grams-all.out
 ```
 
 
+
 ## generate.py
 
-Uses a counts file to generate text based on predictions using the
+Uses a count file to generate text based on predictions using the
 ngrams (for n>=2).  This doesn't work well and is extremely
 inefficient, but probably everyone can understand what is's doing if
 you make a analogy with how LLMs predict the next word.
@@ -98,7 +99,7 @@ $ python3 ngrams/generate.py 2grams-all.out
 - The multiprocessing version isn't much faster, since it spends so
   much time moving around and accumulating the memory internally.
 
-- The reading/writing of the counts files takes a large amount of the
+- The reading/writing of the count files takes a large amount of the
   time and shows the importance of good data formats.
 
 - The MaxRSS indication in the multiprocessing version may be wrong
